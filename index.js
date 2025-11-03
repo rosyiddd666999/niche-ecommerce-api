@@ -9,6 +9,8 @@ const { dbConnection, sequelize } = require("./src/config/database.js");
 // Import routes
 const AuthRoute = require("./src/routes/authRoute.js");
 const UserRoute = require("./src/routes/userRoute.js");
+const ProductRoute = require("./src/routes/productRoute.js");
+const CartRoute = require("./src/routes/cartRoute.js");
 
 const app = express();
 
@@ -26,6 +28,8 @@ app.use(cookieParser());
 // Routes
 app.use("/api/auth", AuthRoute);
 app.use("/api/users", UserRoute);
+app.use("/api/products", ProductRoute);
+app.use("/api/cart", CartRoute);
 
 // Health check endpoint
 app.get("/", (req, res) => {
