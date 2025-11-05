@@ -78,11 +78,17 @@ module.exports = (sequelize) => {
           if (user.password) {
             user.password = await bcrypt.hash(user.password, 12);
           }
+          if (user.password_confirm) {
+            user.password_confirm = await bcrypt.hash(user.password_confirm, 12);
+          }
         },
         beforeUpdate: async (user) => {
           if (user.changed("password")) {
             user.password = await bcrypt.hash(user.password, 12);
             user.password_changed_at = new Date();
+          }
+          if (user.changed("password_confirm")) {
+            user.password_confirm = await bcrypt.hash(user.password_confirm, 12);
           }
         },
         afterFind: (result) => {
@@ -108,26 +114,22 @@ module.exports = (sequelize) => {
     }
   );
 
-  // Instance method untuk check password
   User.prototype.correctPassword = async function (candidate) {
     return await bcrypt.compare(candidate, this.password);
   };
 
-  // Instance method untuk generate OTP reset password
   User.prototype.createPasswordResetToken = function () {
-    // Generate 6 digit OTP
     const otp = crypto.randomInt(100000, 999999).toString();
     
-    // Hash OTP sebelum disimpan ke database
     this.password_reset_token = crypto
       .createHash("sha256")
       .update(otp)
       .digest("hex");
     
-    // OTP berlaku 10 menit
+    // 10 min OTP expiration
     this.password_reset_expires = new Date(Date.now() + 10 * 60 * 1000);
     
-    // Return OTP plain (untuk dikirim via email)
+    // Return OTP plain
     return otp;
   };
 
