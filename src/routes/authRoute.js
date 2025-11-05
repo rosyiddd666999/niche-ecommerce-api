@@ -1,4 +1,5 @@
 const express = require("express");
+const { protect } = require("../middlewares/authMiddleware");
 const {
   signUp,
   login,
@@ -23,7 +24,7 @@ const router = express.Router();
 
 router.post("/signup", authLimiter, signupValidation, signUp);
 router.post("/login", authLimiter, loginValidation, login);
-router.post("/logout", logout);
+router.post("/logout", protect, logout);
 router.post("/forgot-password", forgotPasswordLimiter, forgotPasswordValidation, forgotPassword);
 router.post("/reset-password", authLimiter, resetPasswordValidation, resetPassword);
 
