@@ -7,8 +7,8 @@ const getAllProducts = async (req, res) => {
       {
         status: "success",
         message: "Products fetched successfully",
+        data: products,
       },
-      products
     );
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -22,8 +22,8 @@ const getProductById = async (req, res) => {
       {
         status: "success",
         message: "Products by id fetched successfully",
+        data: product,
       },
-      product
     );
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -47,7 +47,7 @@ const createProduct = async (req, res) => {
 
     const product = await Product.create({
       title: req.body.title,
-      slug: req.body.slug.toLowerCase().replace(/ /g, "-"),
+      slug: req.body.title.toLowerCase().replace(/ /g, "-"),
       description: req.body.description,
       quatity: req.body.quantity,
       price: req.body.price,
@@ -64,8 +64,8 @@ const createProduct = async (req, res) => {
       {
         status: "success",
         message: "Product created successfully",
+        data: product,
       },
-      product
     );
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -77,7 +77,7 @@ const updateProduct = async (req, res) => {
     const updatedProduct = await Product.update(
       {
         title: req.body.title,
-        slug: req.body.slug.toLowerCase().replace(/ /g, "-"),
+        slug: req.body.title.toLowerCase().replace(/ /g, "-"),
         description: req.body.description,
         quatity: req.body.quantity,
         price: req.body.price,
@@ -99,8 +99,8 @@ const updateProduct = async (req, res) => {
       {
         status: "success",
         message: "Products updated successfully",
+        data: product,
       },
-      product
     );
   } catch (error) {
     console.log(error);
@@ -118,8 +118,8 @@ const deleteProduct = async (req, res) => {
       {
         status: "success",
         message: "Product deleted successfully",
+        data: deletedProduct,
       },
-      deletedProduct
     );
   } catch (error) {
     console.log(error);

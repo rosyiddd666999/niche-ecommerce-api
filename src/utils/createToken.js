@@ -10,17 +10,15 @@ const createToken = (payload) => {
 
 const createSendTokenCookies = (user, statusCode, res) => {
   const token = createToken(user.id);
+
+  const cookieDays = Number.parseInt(process.env.JWT_COOKIE_EXPIRES_IN, 10) || 7;
   
   const cookieOptions = {
-    expires: new Date(
-      Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000
-    ),
+    maxAge: cookieDays * 24 * 60 * 60 * 1000,
     httpOnly: true,
+    sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
+    secure: process.env.NODE_ENV === "production"
   };
-
-  if (process.env.NODE_ENV === "production") {
-    cookieOptions.secure = true;
-  }
 
   res.cookie("jwt", token, cookieOptions);
   
@@ -32,7 +30,10 @@ const createSendTokenCookies = (user, statusCode, res) => {
         id: user.id,
         name: user.name,
         email: user.email,
+        phone: user.phone,
         role: user.role,
+        profile_img: user.profile_img,
+        addresses: user.addresses
       }
     }
   });

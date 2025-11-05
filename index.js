@@ -35,7 +35,7 @@ app.use("/api/cart", CartRoute);
 app.get("/", (req, res) => {
   res.json({
     status: "success",
-    message: "Shoe Store API is running",
+    message: "Ecommerce API is running",
   });
 });
 
