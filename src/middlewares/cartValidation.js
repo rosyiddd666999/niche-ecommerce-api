@@ -68,16 +68,6 @@ const updateCartItemValidation = [
   handleValidationErrors,
 ];
 
-const deleteCartItemValidation = [
-  param("cartItemId")
-    .notEmpty()
-    .withMessage("Cart item id is required")
-    .bail()
-    .isInt()
-    .withMessage("Cart item id must be an integer"),
-  handleValidationErrors,
-];
-
 const requireActualChange = (updatableFields = ["quantity"]) => {
   return async (req, res, next) => {
     try {
@@ -160,7 +150,6 @@ module.exports = {
   handleValidationErrors,
   addCartItemValidation,
   updateCartItemValidation,
-  deleteCartItemValidation,
   requireActualChange,
   checkOwnershipOrThrow,
 };
