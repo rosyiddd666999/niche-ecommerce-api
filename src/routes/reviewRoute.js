@@ -15,7 +15,7 @@ const {
 const router = express.Router();
 
 router.post("/", protect, reviewValidationRules, createReview);
-router.get("/:productId", getReviewsByProduct);
+router.get("/product/:productId", getReviewsByProduct);
 router.put("/:id", protect, reviewValidationRules, updateReview);
 router.delete("/:id", protect, deleteReview);
 

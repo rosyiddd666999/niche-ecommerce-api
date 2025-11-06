@@ -14,43 +14,26 @@ const handleValidationErrors = (req, res, next) => {
   next();
 };
 
-const createCategoryValidation = () => {
-  return [
-    body("name")
-      .notEmpty()
-      .withMessage("Name is required")
-      .isString()
-      .withMessage("Name must be a string")
-      .isLength({ max: 100 })
-      .withMessage("Name must be at most 100 characters long"),
-    body("description")
-      .notEmpty()
-      .withMessage("Description is required")
-      .isString()
-      .withMessage("Description must be a string")
-      .isLength({ max: 255 })
-      .withMessage("Description must be at most 255 characters long"),
-    handleValidationErrors,
-  ];
-};
+const createCategoryValidation = [
+  body("name")
+    .isString()
+    .withMessage("Name must be a string")
+    .isLength({ max: 100 })
+    .withMessage("Name must be at most 100 characters long"),
+  body("image").isURL().withMessage("Image must be a valid URL"),
+  handleValidationErrors,
+];
 
-const updateCategoryValidation = () => {
-  return [
-    body("name")
-      .optional()
-      .isString()
-      .withMessage("Name must be a string")
-      .isLength({ max: 100 })
-      .withMessage("Name must be at most 100 characters long"),
-    body("description")
-      .optional()
-      .isString()
-      .withMessage("Description must be a string")
-      .isLength({ max: 255 })
-      .withMessage("Description must be at most 255 characters long"),
-    handleValidationErrors,
-  ];
-};
+const updateCategoryValidation = [
+  body("name")
+    .optional()
+    .isString()
+    .withMessage("Name must be a string")
+    .isLength({ max: 100 })
+    .withMessage("Name must be at most 100 characters long"),
+  body("image").optional().isURL().withMessage("Image must be a valid URL"),
+  handleValidationErrors,
+];
 
 module.exports = {
   handleValidationErrors,
