@@ -1,4 +1,5 @@
-const { body, param,validationResult } = require("express-validator");
+const { body, validationResult } = require("express-validator");
+const { Product } = require("../models/index.js");
 
 // Middleware untuk handle validation errors
 const handleValidationErrors = (req, res, next) => {
@@ -30,11 +31,6 @@ const createProductValidation = [
     .withMessage("Description is required")
     .isLength({ min: 20 })
     .withMessage("Description must be at least 20 characters long"),
-  body("quantity")
-    .notEmpty()
-    .withMessage("Quantity is required")
-    .min(1)
-    .withMessage("Quantity must be at least 1"),
   body("price").notEmpty().withMessage("Price is required"),
   body("colors").optional().isArray().withMessage("Colors must be an array"),
   body("image_cover")
@@ -132,12 +128,10 @@ const requireAtLeastOneChange = (
       });
 
       if (!changed) {
-        return res
-          .status(400)
-          .json({
-            status: "error",
-            message: "No changes detected compared to existing data",
-          });
+        return res.status(400).json({
+          status: "error",
+          message: "No changes detected compared to existing data",
+        });
       }
 
       next();
@@ -147,15 +141,9 @@ const requireAtLeastOneChange = (
   };
 };
 
-const deleteProductValidation = [
-  param("id").notEmpty().withMessage("id param is required").isInt().withMessage("id must be an integer"),
-  handleValidationErrors,
-];
-
 module.exports = {
   handleValidationErrors,
   createProductValidation,
   updateProductValidation,
   requireAtLeastOneChange,
-  deleteProductValidation,
 };

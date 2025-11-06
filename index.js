@@ -12,6 +12,7 @@ const UserRoute = require("./src/routes/userRoute.js");
 const ProductRoute = require("./src/routes/productRoute.js");
 const CartRoute = require("./src/routes/cartRoute.js");
 const CategoryRoute = require("./src/routes/categoryRoute.js");
+const ReviewRoute = require("./src/routes/reviewRoute.js");
 
 const app = express();
 
@@ -32,6 +33,7 @@ app.use("/api/users", UserRoute);
 app.use("/api/products", ProductRoute);
 app.use("/api/cart", CartRoute);
 app.use("/api/categories", CategoryRoute);
+app.use("/api/reviews", ReviewRoute);
 
 // Health check endpoint
 app.get("/", (req, res) => {
