@@ -42,7 +42,11 @@ const createCategory = async (req, res) => {
       });
     }
 
-    const category = await Category.create(req.body);
+    const category = await Category.create({
+      name: req.body.name,
+      slug: req.body.name.toLowerCase().replace(/ /g, "-"),
+      image: req.body.image,
+    });
     res.status(201).json({
       status: "success",
       message: "Categories added successfully",
@@ -59,7 +63,11 @@ const updateCategory = async (req, res) => {
     if (!category) {
       return res.status(404).json({ message: "Category not found" });
     }
-    await category.update(req.body);
+    await category.update({
+      name: req.body.name,
+      slug: req.body.name.toLowerCase().replace(/ /g, "-"),
+      image: req.body.image,
+    });
     res.status(200).json({
       status: "success",
       message: "Categories updated successfully",

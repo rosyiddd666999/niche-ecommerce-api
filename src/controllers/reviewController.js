@@ -27,9 +27,10 @@ const createReview = async (req, res) => {
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
+
     const review = await Review.create({
       product_id: productId,
-      user_id: userId,
+      user_name: user.name,
       rating,
       comment,
     });
@@ -43,11 +44,20 @@ const createReview = async (req, res) => {
 
 const updateReview = async (req, res) => {
   try {
+    const userId = req.user.id;
     const review = await Review.findByPk(req.params.id);
     if (!review) {
       return res.status(404).json({ message: "Review not found" });
     }
+
+    const user = await User.findByPk(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
     await review.update({
+      user_id: user.id,
+      user_name: user.name,
       rating: req.body.rating,
       comment: req.body.comment,
     });
