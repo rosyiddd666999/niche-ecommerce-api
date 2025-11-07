@@ -1,5 +1,5 @@
 const express = require("express");
-const { protect } = require("../middlewares/authMiddleware");
+const { protect } = require("../middlewares/core/authMiddleware");
 
 const {
   createReview,

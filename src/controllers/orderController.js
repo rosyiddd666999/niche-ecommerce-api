@@ -7,7 +7,7 @@ const {
   User,
 } = require("../models/index.js");
 const { snap, coreApi } = require("../config/midtrans.js");
-const { sendPaymentSuccessEmail } = require("../services/emailService.js");
+const { sendPaymentSuccessEmail } = require("../utils/emailService.js");
 const crypto = require('crypto');
 
 // Helper: Calculate cart totals
