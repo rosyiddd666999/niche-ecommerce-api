@@ -1,5 +1,5 @@
 const express = require("express");
-const { protect } = require("../middlewares/authMiddleware");
+const { protect, isAdmin } = require("../middlewares/authMiddleware");
 
 const {
   getAllProducts,
@@ -19,8 +19,8 @@ const router = express.Router();
 
 router.get("/", getAllProducts);
 router.get("/:id", getProductById);
-router.post("/", protect, createProductValidation, createProduct);
-router.put("/:id", protect, updateProductValidation, requireAtLeastOneChange, updateProduct);
-router.delete("/:id", protect, deleteProduct);
+router.post("/", protect, isAdmin, createProductValidation, createProduct);
+router.put("/:id", protect, isAdmin, updateProductValidation, requireAtLeastOneChange, updateProduct);
+router.delete("/:id", protect, isAdmin, deleteProduct);
 
 module.exports = router;
