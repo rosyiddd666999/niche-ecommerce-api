@@ -7,7 +7,7 @@ const {
   User,
 } = require("../models/index.js");
 const { snap, coreApi } = require("../config/midtrans.js");
-const { sendPaymentSuccessEmail } = require("../services/emailService.js");
+const { sendPaymentSuccessEmail } = require("../utils/emailService.js");
 const crypto = require('crypto');
 
 // Helper: Calculate cart totals
@@ -188,8 +188,13 @@ const createOrderByCart = async (req, res) => {
 };
 
 // NOTIFICATION HANDLER dari Midtrans
+// NOTIFICATION HANDLER dari Midtrans
 const handleMidtransNotification = async (req, res) => {
   try {
+    console.log('=== MIDTRANS NOTIFICATION RECEIVED ===');
+    console.log('Headers:', req.headers);
+    console.log('Body:', req.body);
+    
     const notification = req.body;
 
     // Verify notification authenticity
@@ -209,6 +214,7 @@ const handleMidtransNotification = async (req, res) => {
       .digest('hex');
 
     if (signatureKey !== expectedSignature) {
+      console.error('Invalid signature!');
       return res.status(403).json({
         status: "error",
         message: "Invalid signature"
@@ -229,6 +235,7 @@ const handleMidtransNotification = async (req, res) => {
     });
 
     if (!order) {
+      console.error('Order not found:', orderId);
       return res.status(404).json({
         status: "error",
         message: "Order not found"
@@ -273,6 +280,8 @@ const handleMidtransNotification = async (req, res) => {
     if (paymentStatus === "settlement" && order.user) {
       await sendPaymentSuccessEmail(order.user, order, order.orderItems);
     }
+
+    console.log('=== NOTIFICATION PROCESSED SUCCESSFULLY ===');
 
     res.status(200).json({
       status: "success",
@@ -336,7 +345,7 @@ const getUserOrders = async (req, res) => {
       include: [
         {
           model: OrderItem,
-          as: "orderItems",
+          as: "items",
           include: [{ model: Product, as: "product" }]
         }
       ],
@@ -358,9 +367,35 @@ const getUserOrders = async (req, res) => {
   }
 };
 
+const successOrderPayment = async (req, res) => {
+  try {
+    const orderId = req.params.id;
+    const order = await Order.findByPk(orderId);
+
+    if (!order) {
+      return res.status(404).json({
+        status: "error",
+        message: "Order not found"
+      });
+    }
+
+    res.status(200).json({
+      status: "success",
+      data: order
+    });
+  } catch (error) {
+    console.error("Get order error:", error);
+    res.status(500).json({
+      status: "error",
+      message: error.message
+    });
+  }
+};
+
 module.exports = {
   createOrderByCart,
   handleMidtransNotification,
   getOrderById,
-  getUserOrders
+  getUserOrders,
+  successOrderPayment
 };

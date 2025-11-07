@@ -21,9 +21,11 @@ const createCoupon = async (req, res) => {
       discount,
       created_by: createdBy,
     });
-    res
-      .status(201)
-      .json({ message: "Coupon created successfully", data: coupon });
+    res.status(201).json({
+      status: "success",
+      message: "Coupon created successfully",
+      data: coupon,
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -36,7 +38,11 @@ const updateCoupon = async (req, res) => {
       return res.status(404).json({ message: "Coupon not found" });
     }
     await coupon.update(req.body);
-    res.status(200).json({ message: "Coupon updated successfully" });
+    res.status(200).json({
+      status: "success",
+      message: "Coupon updated successfully",
+      data: coupon,
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

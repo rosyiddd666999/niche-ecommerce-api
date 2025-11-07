@@ -67,12 +67,31 @@ const protect = async (req, res, next) => {
   }
 };
 
-const isAdmin = (user) => {
-  if (user.role !== "admin") {
-    return false;
-  }
+const isAdmin = (req, res, next) => {
+  try {
+    const user = req.user; // di-attach oleh protect
+    if (!user) {
+      return res.status(401).json({
+        status: "error",
+        message: "User belum di-authenticate",
+      });
+    }
 
-  return true;
+    if (user.role !== "admin") {
+      return res.status(403).json({
+        status: "error",
+        message: "Akses ditolak. Hanya admin yang boleh mengakses.",
+      });
+    }
+
+    next();
+  } catch (err) {
+    console.error("isAdmin error:", err);
+    res.status(500).json({
+      status: "error",
+      message: "Terjadi kesalahan pada otorisasi",
+    });
+  }
 };
 
 module.exports = { protect, isAdmin };
