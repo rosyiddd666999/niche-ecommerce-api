@@ -14,6 +14,7 @@ const CartRoute = require("./src/routes/cartRoute.js");
 const CategoryRoute = require("./src/routes/categoryRoute.js");
 const ReviewRoute = require("./src/routes/reviewRoute.js");
 const CouponRoute = require("./src/routes/couponRoute.js");
+const OrderRoute = require("./src/routes/orderRoute.js");
 
 const app = express();
 
@@ -36,6 +37,7 @@ app.use("/api/cart", CartRoute);
 app.use("/api/categories", CategoryRoute);
 app.use("/api/reviews", ReviewRoute);
 app.use("/api/coupons", CouponRoute);
+app.use("/api/orders", OrderRoute);
 
 // Health check endpoint
 app.get("/", (req, res) => {
