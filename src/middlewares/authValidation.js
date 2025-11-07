@@ -1,19 +1,7 @@
 const { body, validationResult } = require("express-validator");
-
-// Middleware untuk handle validation errors
-const handleValidationErrors = (req, res, next) => {
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return res.status(400).json({
-      status: "error",
-      errors: errors.array().map((err) => ({
-        field: err.path,
-        message: err.msg,
-      })),
-    });
-  }
-  next();
-};
+const {
+  handleValidationErrors,
+} = require("./core/errorsValidationHandling.js");
 
 // Validation rules untuk signup
 const signupValidation = [

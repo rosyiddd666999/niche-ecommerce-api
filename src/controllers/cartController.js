@@ -51,7 +51,7 @@ const addProductToCart = async (req, res) => {
       // Tambah item baru
       cartItem = await CartItem.create({
         cart_id: cart.id,
-        product_id: product_id,
+        product_id: product.id,
         quantity: quantity,
       });
 
