@@ -35,10 +35,10 @@ const sendPasswordResetOTP = async (user, otp) => {
   }
 };
 
-const sendPaymentSuccessEmail = async (user, order, orderItems) => {
+const sendPaymentSuccessEmail = async (user, order, items) => {
   try {
     // Format items untuk email
-    const itemsList = orderItems
+    const itemsList = items
       .map((item) => {
         const productName = item.product?.title || "Product";
         return `

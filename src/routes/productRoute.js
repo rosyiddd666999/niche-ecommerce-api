@@ -1,5 +1,5 @@
 const express = require("express");
-const { protect, isAdmin } = require("../middlewares/core/authMiddleware");
+const { protect, isAdmin } = require("../middlewares/authMiddleware");
 
 const {
   getAllProducts,
@@ -13,7 +13,7 @@ const {
   createProductValidation,
   updateProductValidation,
   requireAtLeastOneChange,
-} = require("../middlewares/productValidation.js");
+} = require("../utils/validations/productValidation.js");
 
 const router = express.Router();
 

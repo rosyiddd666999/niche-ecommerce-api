@@ -1,5 +1,5 @@
 const express = require("express");
-const { protect } = require("../middlewares/core/authMiddleware");
+const { protect } = require("../middlewares/authMiddleware");
 
 const {
   createReview,
@@ -10,7 +10,7 @@ const {
 
 const {
   reviewValidationRules
-} = require("../middlewares/reviewValidation.js");
+} = require("../utils/validations/reviewValidation.js");
 
 const router = express.Router();
 

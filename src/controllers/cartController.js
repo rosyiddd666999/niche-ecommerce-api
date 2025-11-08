@@ -48,12 +48,19 @@ const addProductToCart = async (req, res) => {
         },
       });
     } else {
-      // Tambah item baru
-      cartItem = await CartItem.create({
+      // Buat cart item baru
+      if (product.stock < quantity) {
+        return res.status(400).json({
+          status: "error",
+          message: `Stock tidak cukup. Stock tersedia: ${product.stock}, sudah di cart: ${cartItem.quantity}`,
+        });
+      }
+
+      const cartItem = await CartItem.create({
         cart_id: cart.id,
-        product_id: product.id,
+        product_id: productId,
         quantity: quantity,
-      });
+      })
 
       return res.status(201).json({
         status: "success",

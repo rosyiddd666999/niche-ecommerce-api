@@ -10,7 +10,7 @@ module.exports = (sequelize) => {
         autoIncrement: true,
       },
       tax_price: { type: DataTypes.INTEGER.UNSIGNED, defaultValue: 0 },
-      shipping_address: { type: DataTypes.JSON, allowNull: true }, // {details, phone, city, postalCode}
+      shipping_address: { type: DataTypes.JSON, allowNull: true },
       shipping_price: { type: DataTypes.INTEGER.UNSIGNED, defaultValue: 0 },
       total_order_price: { type: DataTypes.INTEGER.UNSIGNED, allowNull: true },
       payment_method_type: {

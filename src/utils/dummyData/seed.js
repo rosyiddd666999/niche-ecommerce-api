@@ -10,7 +10,7 @@ const {
   Coupon,
   Order,
   OrderItem,
-} = require("../models/index.js");
+} = require("../../models/index.js");
 
 const seed = async () => {
   try {

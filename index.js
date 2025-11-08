@@ -21,7 +21,7 @@ const app = express();
 // Middlewares
 app.use(
   cors({
-    origin: process.env.APP_URL || "http://localhost:5000",
+    origin: process.env.APP_URL || "http://localhost:${PORT}",
     credentials: true,
   })
 );

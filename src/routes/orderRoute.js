@@ -1,5 +1,5 @@
 const express = require("express");
-const { protect } = require("../middlewares/core/authMiddleware");
+const { protect } = require("../middlewares/authMiddleware");
 
 const {
   createOrderByCart,
@@ -12,9 +12,9 @@ const {
 const router = express.Router();
 
 router.post("/cart/:cartId/checkout", protect, createOrderByCart);
-router.post("/notification", handleMidtransNotification);
+router.post("/notification", handleMidtransNotification); 
+router.get("/user/orders", protect, getUserOrders); 
+router.get("/:id/success", successOrderPayment); 
 router.get("/:id", protect, getOrderById);
-router.get("/", protect, getUserOrders);
-router.get("/:orderId/success", protect, successOrderPayment);
 
 module.exports = router;
