@@ -1,5 +1,5 @@
 const express = require("express");
-const { protect, isAdmin } = require("../middlewares/core/authMiddleware");
+const { protect, isAdmin } = require("../middlewares/authMiddleware");
 
 const {
   getAllCategories,
@@ -12,7 +12,7 @@ const {
 const {
   createCategoryValidation,
   updateCategoryValidation,
-} = require("../middlewares/categoryValidation.js");
+} = require("../utils/validations/categoryValidation.js");
 
 const router = express.Router();
 

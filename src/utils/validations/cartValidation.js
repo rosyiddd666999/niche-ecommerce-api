@@ -1,6 +1,6 @@
 // validators/cartValidators.js
 const { body, param, validationResult } = require("express-validator");
-const { Product, CartItem } = require("../models"); // sesuaikan path models
+const { Product, CartItem } = require("../../models"); // sesuaikan path models
 
 const handleValidationErrors = (req, res, next) => {
   const errors = validationResult(req);

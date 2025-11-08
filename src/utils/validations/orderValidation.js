@@ -1,8 +1,11 @@
 const { body } = require("express-validator");
-const { handleValidationErrors } = require("./core/errorsValidationHandling.js");
+const {
+  handleValidationErrors,
+} = require("../../middlewares/errorsValidationHandling.js");
 
 const createOrderValidation = [
   body("shippingAddress")
+    .optional()
     .isObject()
     .withMessage("Shipping address must be an object")
     .custom((value) => {

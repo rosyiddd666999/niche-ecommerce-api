@@ -1,8 +1,7 @@
 const crypto = require("crypto");
 const { User } = require("../models/index.js");
-const { createSendTokenCookies } = require("../utils/createToken.js");
-const { sendPasswordResetOTP } = require("../utils/emailService.js");
-const { profile } = require("console");
+const { createSendTokenCookies } = require("../utils/services/createToken.js");
+const { sendPasswordResetOTP } = require("../utils/services/emailService.js");
 
 const signUp = async (req, res, next) => {
   try {

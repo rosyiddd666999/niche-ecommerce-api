@@ -1,5 +1,5 @@
 const express = require("express");
-const { protect } = require("../middlewares/core/authMiddleware");
+const { protect } = require("../middlewares/authMiddleware");
 const {
   signUp,
   login,
@@ -13,7 +13,7 @@ const {
   loginValidation,
   forgotPasswordValidation,
   resetPasswordValidation
-} = require("../middlewares/authValidation");
+} = require("../utils/validations/authValidation");
 
 const {
   authLimiter,

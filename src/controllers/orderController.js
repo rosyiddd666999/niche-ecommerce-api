@@ -7,7 +7,7 @@ const {
   User,
 } = require("../models/index.js");
 const { snap, coreApi } = require("../config/midtrans.js");
-const { sendPaymentSuccessEmail } = require("../utils/emailService.js");
+const { sendPaymentSuccessEmail } = require("../utils/services/emailService.js");
 const crypto = require('crypto');
 
 // Helper: Calculate cart totals
@@ -147,7 +147,7 @@ const createOrderByCart = async (req, res) => {
         }
       },
       callbacks: {
-        finish: `${process.env.APP_URL}/orders/${order.id}/success`,
+        finish: `${process.env.APP_URL}/api/orders/${order.id}/success`,
       }
     };
 
@@ -187,12 +187,8 @@ const createOrderByCart = async (req, res) => {
   }
 };
 
-// NOTIFICATION HANDLER dari Midtrans
-// NOTIFICATION HANDLER dari Midtrans
 const handleMidtransNotification = async (req, res) => {
   try {
-    console.log('=== MIDTRANS NOTIFICATION RECEIVED ===');
-    console.log('Headers:', req.headers);
     console.log('Body:', req.body);
     
     const notification = req.body;
@@ -204,6 +200,8 @@ const handleMidtransNotification = async (req, res) => {
     const transactionStatus = statusResponse.transaction_status;
     const fraudStatus = statusResponse.fraud_status;
     const signatureKey = statusResponse.signature_key;
+
+    console.log('Processing order_id:', orderId);
 
     // Verify signature
     const serverKey = process.env.MIDTRANS_SERVER_KEY;
@@ -228,21 +226,21 @@ const handleMidtransNotification = async (req, res) => {
         { model: User, as: "user" },
         { 
           model: OrderItem, 
-          as: "orderItems",
+          as: "items",
           include: [{ model: Product, as: "product" }]
         }
       ]
     });
 
     if (!order) {
-      console.error('Order not found:', orderId);
+      console.error('Order not found for transaction_id:', orderId);
       return res.status(404).json({
         status: "error",
         message: "Order not found"
       });
     }
 
-    console.log(`Notification received for order ${order.id}: ${transactionStatus}`);
+    console.log(`Processing notification for order ${order.id}: ${transactionStatus}`);
 
     let paymentStatus = "pending";
     let isPaid = false;
@@ -276,9 +274,12 @@ const handleMidtransNotification = async (req, res) => {
       paid_at: paidAt
     });
 
+    console.log(`Order ${order.id} updated: payment_status=${paymentStatus}, is_paid=${isPaid}`);
+
     // Kirim email jika pembayaran sukses
     if (paymentStatus === "settlement" && order.user) {
-      await sendPaymentSuccessEmail(order.user, order, order.orderItems);
+      await sendPaymentSuccessEmail(order.user, order, order.items);
+      console.log(`Success email sent to ${order.user.email}`);
     }
 
     console.log('=== NOTIFICATION PROCESSED SUCCESSFULLY ===');
@@ -370,7 +371,22 @@ const getUserOrders = async (req, res) => {
 const successOrderPayment = async (req, res) => {
   try {
     const orderId = req.params.id;
-    const order = await Order.findByPk(orderId);
+
+    const order = await Order.findOne({
+      where: { id: orderId },
+      include: [
+        {
+          model: OrderItem,
+          as: "items",
+          include: [{ model: Product, as: "product" }]
+        },
+        {
+          model: User,
+          as: "user",
+          attributes: ['id', 'name', 'email'] // Hanya ambil data yang diperlukan
+        }
+      ]
+    });
 
     if (!order) {
       return res.status(404).json({
@@ -379,10 +395,52 @@ const successOrderPayment = async (req, res) => {
       });
     }
 
+    // Cek status payment real-time dari Midtrans
+    if (order.payment_status === 'pending' && order.payment_transaction_id) {
+      try {
+        const statusResponse = await coreApi.transaction.status(order.payment_transaction_id);
+        
+        let paymentStatus = order.payment_status;
+        let isPaid = order.is_paid;
+        let paidAt = order.paid_at;
+
+        // Update status berdasarkan response Midtrans
+        if (statusResponse.transaction_status === 'settlement' || 
+            (statusResponse.transaction_status === 'capture' && statusResponse.fraud_status === 'accept')) {
+          paymentStatus = 'settlement';
+          isPaid = true;
+          paidAt = new Date();
+
+          await order.update({
+            payment_status: paymentStatus,
+            is_paid: isPaid,
+            paid_at: paidAt
+          });
+
+          await order.reload();
+        }
+      } catch (midtransError) {
+        console.error('Error checking Midtrans status:', midtransError);
+      }
+    }
+
     res.status(200).json({
       status: "success",
-      data: order
+      message: order.is_paid 
+        ? "Payment successful! Your order is being processed." 
+        : "Payment is being verified. Please wait a moment.",
+      data: {
+        id: order.id,
+        payment_status: order.payment_status,
+        is_paid: order.is_paid,
+        paid_at: order.paid_at,
+        total_order_price: order.total_order_price,
+        payment_transaction_id: order.payment_transaction_id,
+        created_at: order.createdAt,
+        items: order.items
+      }
     });
+
   } catch (error) {
     console.error("Get order error:", error);
     res.status(500).json({

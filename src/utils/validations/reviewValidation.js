@@ -1,5 +1,5 @@
 const { body, validationResult } = require("express-validator");
-const { Review, Product, User } = require("../models/index.js");
+const { Review, Product, User } = require("../../models/index.js");
 
 // Middleware to handle validation errors
 const handleValidationErrors = (req, res, next) => {

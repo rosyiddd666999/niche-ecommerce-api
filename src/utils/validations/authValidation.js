@@ -1,7 +1,7 @@
 const { body, validationResult } = require("express-validator");
 const {
   handleValidationErrors,
-} = require("./core/errorsValidationHandling.js");
+} = require("../../middlewares/errorsValidationHandling.js");
 
 // Validation rules untuk signup
 const signupValidation = [

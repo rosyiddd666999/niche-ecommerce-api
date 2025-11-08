@@ -1,7 +1,7 @@
 const { body } = require("express-validator");
 const {
   handleValidationErrors,
-} = require("./core/errorsValidationHandling.js");
+} = require("../../middlewares/errorsValidationHandling.js");
 
 const createCouponValidation = [
   body("name")
