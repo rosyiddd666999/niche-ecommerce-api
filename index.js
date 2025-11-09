@@ -2,9 +2,18 @@ require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
+const helmet = require("helmet");
+const rateLimit = require("express-rate-limit");
+const mongoSanitize = require("express-mongo-sanitize");
+const xss = require("xss-clean");
+const hpp = require("hpp");
+const morgan = require("morgan");
 
 // Import db & models
 const { dbConnection, sequelize } = require("./src/config/database.js");
+
+const { apiKeyAuth } = require("./src/middlewares/apiKeyAuth.js");
+const { errorHandler } = require("./src/middlewares/errorHandler.js");
 
 // Import routes
 const AuthRoute = require("./src/routes/authRoute.js");
@@ -18,18 +27,74 @@ const OrderRoute = require("./src/routes/orderRoute.js");
 
 const app = express();
 
-// Middlewares
+app.set("trust proxy", 1);
+
+// Security Middlewares
+app.use(helmet()); // Set security HTTP headers
+app.use(mongoSanitize()); // Sanitize data against NoSQL injection
+app.use(xss()); // Prevent XSS attacks
+app.use(hpp()); // Prevent HTTP Parameter Pollution
+
+const allowedOrigins = process.env.ALLOWED_ORIGINS
+  ? process.env.ALLOWED_ORIGINS.split(",")
+  : [`http://localhost:${process.env.PORT}`];
+
 app.use(
   cors({
-    origin: process.env.APP_URL || "http://localhost:${PORT}",
+    origin: function (origin, callback) {
+      // Allow requests with no origin (mobile apps, postman, etc.)
+      if (!origin) return callback(null, true);
+
+      if (allowedOrigins.indexOf(origin) !== -1) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
     credentials: true,
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization", "X-API-Key"],
   })
 );
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+
+// Rate Limiting
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 100,
+  message: "Too many requests from this IP, please try again later.",
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+if (process.env.NODE_ENV === "development") {
+  app.use(morgan("dev"));
+} else {
+  app.use(morgan("combined"));
+}
+
+app.use(express.json({ limit: "10mb" }));
+app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 app.use(cookieParser());
 
-// Routes
+// Health check endpoint (no API key required)
+app.get("/", (req, res) => {
+  res.json({
+    status: "success",
+    message: "Ecommerce API is running",
+    environment: process.env.NODE_ENV,
+    timestamp: new Date().toISOString(),
+  });
+});
+
+app.get("/health", (req, res) => {
+  res.json({
+    status: "success",
+    uptime: process.uptime(),
+    timestamp: new Date().toISOString(),
+  });
+});
+
+app.use("/api", apiKeyAuth, limiter);
 app.use("/api/auth", AuthRoute);
 app.use("/api/users", UserRoute);
 app.use("/api/products", ProductRoute);
@@ -38,14 +103,6 @@ app.use("/api/categories", CategoryRoute);
 app.use("/api/reviews", ReviewRoute);
 app.use("/api/coupons", CouponRoute);
 app.use("/api/orders", OrderRoute);
-
-// Health check endpoint
-app.get("/", (req, res) => {
-  res.json({
-    status: "success",
-    message: "Ecommerce API is running",
-  });
-});
 
 // 404 Handler
 app.use((req, res) => {
@@ -56,11 +113,17 @@ app.use((req, res) => {
 });
 
 // Global Error Handler
-app.use((err, req, res, next) => {
-  console.error("Error:", err);
-  res.status(err.statusCode || 500).json({
-    status: "error",
-    message: err.message || "Internal server error",
+app.use(errorHandler);
+
+// Graceful shutdown
+process.on("SIGTERM", () => {
+  console.log("SIGTERM signal received: closing HTTP server");
+  server.close(() => {
+    console.log("HTTP server closed");
+    sequelize.close().then(() => {
+      console.log("Database connection closed");
+      process.exit(0);
+    });
   });
 });
 
@@ -71,17 +134,19 @@ const PORT = process.env.PORT;
     await dbConnection();
 
     await sequelize.sync({
-      alter: process.env.NODE_ENV === "development",
+      alter: process.env.NODE_ENV === "production",
+      force: false,
     });
-
     console.log("All models synced with DB.");
 
-    app.listen(PORT, () => {
+    const server = app.listen(PORT, () => {
       console.log(`Server running on http://localhost:${PORT}`);
       console.log(`Environment: ${process.env.NODE_ENV}`);
     });
+
+    global.server = server;
   } catch (err) {
-    console.error("Failed to start server:", err.message);
+    console.error("Failed to start server:");
     process.exit(1);
   }
 })();

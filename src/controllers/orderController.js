@@ -188,9 +188,7 @@ const createOrderByCart = async (req, res) => {
 };
 
 const handleMidtransNotification = async (req, res) => {
-  try {
-    console.log('Body:', req.body);
-    
+  try {    
     const notification = req.body;
 
     // Verify notification authenticity
@@ -200,8 +198,6 @@ const handleMidtransNotification = async (req, res) => {
     const transactionStatus = statusResponse.transaction_status;
     const fraudStatus = statusResponse.fraud_status;
     const signatureKey = statusResponse.signature_key;
-
-    console.log('Processing order_id:', orderId);
 
     // Verify signature
     const serverKey = process.env.MIDTRANS_SERVER_KEY;
@@ -233,14 +229,11 @@ const handleMidtransNotification = async (req, res) => {
     });
 
     if (!order) {
-      console.error('Order not found for transaction_id:', orderId);
       return res.status(404).json({
         status: "error",
         message: "Order not found"
       });
     }
-
-    console.log(`Processing notification for order ${order.id}: ${transactionStatus}`);
 
     let paymentStatus = "pending";
     let isPaid = false;
@@ -276,13 +269,9 @@ const handleMidtransNotification = async (req, res) => {
 
     console.log(`Order ${order.id} updated: payment_status=${paymentStatus}, is_paid=${isPaid}`);
 
-    // Kirim email jika pembayaran sukses
     if (paymentStatus === "settlement" && order.user) {
       await sendPaymentSuccessEmail(order.user, order, order.items);
-      console.log(`Success email sent to ${order.user.email}`);
     }
-
-    console.log('=== NOTIFICATION PROCESSED SUCCESSFULLY ===');
 
     res.status(200).json({
       status: "success",
@@ -290,7 +279,6 @@ const handleMidtransNotification = async (req, res) => {
     });
 
   } catch (error) {
-    console.error("Notification error:", error);
     res.status(500).json({
       status: "error",
       message: error.message
@@ -328,7 +316,6 @@ const getOrderById = async (req, res) => {
     });
 
   } catch (error) {
-    console.error("Get order error:", error);
     res.status(500).json({
       status: "error",
       message: error.message
@@ -360,7 +347,6 @@ const getUserOrders = async (req, res) => {
     });
 
   } catch (error) {
-    console.error("Get orders error:", error);
     res.status(500).json({
       status: "error",
       message: error.message
@@ -442,7 +428,6 @@ const successOrderPayment = async (req, res) => {
     });
 
   } catch (error) {
-    console.error("Get order error:", error);
     res.status(500).json({
       status: "error",
       message: error.message
