@@ -18,12 +18,18 @@
     "cors": "^2.8.5",
     "dotenv": "^17.2.3",
     "express": "^5.1.0",
+    "express-mongo-sanitize": "^2.2.0",
     "express-rate-limit": "^8.1.0",
     "express-validator": "^7.2.1",
+    "generate-api-key": "^1.0.2",
+    "helmet": "^8.1.0",
+    "hpp": "^0.2.3",
     "jsonwebtoken": "^9.0.2",
     "midtrans-client": "^1.4.3",
+    "morgan": "^1.10.1",
     "mysql2": "^3.15.2",
     "nodemailer": "^7.0.9",
-    "sequelize": "^6.37.7"
+    "sequelize": "^6.37.7",
+    "xss-clean": "^0.1.4"
   }
 }
