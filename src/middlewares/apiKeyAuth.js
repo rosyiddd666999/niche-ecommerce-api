@@ -32,5 +32,4 @@ const apiKeyAuth = (req, res, next) => {
 
 module.exports = {
   apiKeyAuth,
-  generateApiKey,
 };

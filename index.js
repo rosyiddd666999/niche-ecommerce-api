@@ -4,8 +4,6 @@ const cors = require("cors");
 const cookieParser = require("cookie-parser");
 const helmet = require("helmet");
 const rateLimit = require("express-rate-limit");
-const mongoSanitize = require("express-mongo-sanitize");
-const xss = require("xss-clean");
 const hpp = require("hpp");
 const morgan = require("morgan");
 
@@ -14,6 +12,7 @@ const { dbConnection, sequelize } = require("./src/config/database.js");
 
 const { apiKeyAuth } = require("./src/middlewares/apiKeyAuth.js");
 const { errorHandler } = require("./src/middlewares/errorHandler.js");
+const { sanitize } = require("./src/middlewares/sanitize.js");
 
 // Import routes
 const AuthRoute = require("./src/routes/authRoute.js");
@@ -31,8 +30,6 @@ app.set("trust proxy", 1);
 
 // Security Middlewares
 app.use(helmet()); // Set security HTTP headers
-app.use(mongoSanitize()); // Sanitize data against NoSQL injection
-app.use(xss()); // Prevent XSS attacks
 app.use(hpp()); // Prevent HTTP Parameter Pollution
 
 const allowedOrigins = process.env.ALLOWED_ORIGINS
@@ -66,15 +63,25 @@ const limiter = rateLimit({
   legacyHeaders: false,
 });
 
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 5,
+  message: "Too many login attempts, please try again later.",
+  skipSuccessfulRequests: true,
+});
+
+// Logging
 if (process.env.NODE_ENV === "development") {
   app.use(morgan("dev"));
 } else {
   app.use(morgan("combined"));
 }
 
+// Body Parser & Sanitization
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 app.use(cookieParser());
+app.use(sanitize); // Custom sanitization middleware
 
 // Health check endpoint (no API key required)
 app.get("/", (req, res) => {
@@ -94,7 +101,14 @@ app.get("/health", (req, res) => {
   });
 });
 
+// Apply API Key + Rate Limiting to all /api routes
 app.use("/api", apiKeyAuth, limiter);
+
+// Auth routes dengan rate limiting khusus
+app.use("/api/auth/login", authLimiter);
+app.use("/api/auth/register", authLimiter);
+
+// Routes
 app.use("/api/auth", AuthRoute);
 app.use("/api/users", UserRoute);
 app.use("/api/products", ProductRoute);
@@ -118,23 +132,25 @@ app.use(errorHandler);
 // Graceful shutdown
 process.on("SIGTERM", () => {
   console.log("SIGTERM signal received: closing HTTP server");
-  server.close(() => {
-    console.log("HTTP server closed");
-    sequelize.close().then(() => {
-      console.log("Database connection closed");
-      process.exit(0);
+  if (global.server) {
+    global.server.close(() => {
+      console.log("HTTP server closed");
+      sequelize.close().then(() => {
+        console.log("Database connection closed");
+        process.exit(0);
+      });
     });
-  });
+  }
 });
 
-const PORT = process.env.PORT;
+const PORT = process.env.PORT || 5000;
 
 (async () => {
   try {
     await dbConnection();
 
     await sequelize.sync({
-      alter: process.env.NODE_ENV === "production",
+      alter: process.env.NODE_ENV === "development",
       force: false,
     });
     console.log("All models synced with DB.");
@@ -142,11 +158,12 @@ const PORT = process.env.PORT;
     const server = app.listen(PORT, () => {
       console.log(`Server running on http://localhost:${PORT}`);
       console.log(`Environment: ${process.env.NODE_ENV}`);
+      console.log(`Security: Enabled`);
     });
 
     global.server = server;
   } catch (err) {
-    console.error("Failed to start server:");
+    console.error("Failed to start server:", err.message);
     process.exit(1);
   }
 })();
