@@ -7,6 +7,7 @@ const {
   createProduct,
   updateProduct,
   deleteProduct,
+  uploadImage,
 } = require("../controllers/productController.js");
 
 const {
@@ -19,8 +20,23 @@ const router = express.Router();
 
 router.get("/", getAllProducts);
 router.get("/:id", getProductById);
-router.post("/", protect, isAdmin, createProductValidation, createProduct);
-router.put("/:id", protect, isAdmin, updateProductValidation, requireAtLeastOneChange, updateProduct);
+router.post(
+  "/",
+  protect,
+  isAdmin,
+  createProductValidation,
+  uploadImage,
+  createProduct
+);
+router.put(
+  "/:id",
+  protect,
+  isAdmin,
+  updateProductValidation,
+  uploadImage,
+  requireAtLeastOneChange,
+  updateProduct
+);
 router.delete("/:id", protect, isAdmin, deleteProduct);
 
 module.exports = router;
