@@ -18,8 +18,6 @@ A RESTful API built for a niche e-commerce platform. Developed using **Node.js**
   - Integration with Midtrans
 - 📦 **Order Management**
   - Manage order statuses (Pending → Paid → Shipped → Delivered)
-- ❤️ **Wishlist / Favorites**
-- 🔍 **Product Filtering, Sorting & Searching**
 - ⚡ **Performance Optimization**
   - Redis caching support (upcoming)
 - ☁️ **Media Upload**
