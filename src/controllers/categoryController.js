@@ -1,4 +1,20 @@
 const { Category } = require("../models/index.js");
+const cloudinary = require("../config/cloudinary.js");
+const multer = require("multer");
+const fs = require("fs");
+
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "uploads/");
+  },
+  filename: (req, file, cb) => {
+    cb(null, Date.now() + "-" + file.originalname);
+  },
+});
+
+const upload = multer({ storage });
+
+const uploadImage = upload.fields([{ name: "category_image", maxCount: 1 }]);
 
 const getAllCategories = async (req, res) => {
   try {
@@ -42,10 +58,20 @@ const createCategory = async (req, res) => {
       });
     }
 
+    let imageUrl = null;
+    if (req.files.category_image) {
+      const result = await cloudinary.uploader.upload(
+        req.files.category_image[0].path,
+        { folder: "categories" }
+      );
+      imageUrl = result.secure_url;
+      fs.unlinkSync(req.files.category_image[0].path);
+    }
+
     const category = await Category.create({
       name: req.body.name,
       slug: req.body.name.toLowerCase().replace(/ /g, "-"),
-      image: req.body.image,
+      image: imageUrl,
     });
     res.status(201).json({
       status: "success",
@@ -63,10 +89,21 @@ const updateCategory = async (req, res) => {
     if (!category) {
       return res.status(404).json({ message: "Category not found" });
     }
+
+    let newImageUrl = category.image;
+    if (req.files.category_image) {
+      const result = await cloudinary.uploader.upload(
+        req.files.category_image[0].path,
+        { folder: "categories" }
+      );
+      newImageUrl = result.secure_url;
+      fs.unlinkSync(req.files.category_image[0].path);
+    }
+
     await category.update({
       name: req.body.name,
       slug: req.body.name.toLowerCase().replace(/ /g, "-"),
-      image: req.body.image,
+      image: newImageUrl,
     });
     res.status(200).json({
       status: "success",
@@ -84,6 +121,12 @@ const deleteCategory = async (req, res) => {
     if (!category) {
       return res.status(404).json({ message: "Category not found" });
     }
+
+    if (category.image) {
+      const publicId = category.image.split("/").pop().split(".")[0];
+      await cloudinary.uploader.destroy(`categories/${publicId}`);
+    }
+    
     await category.destroy();
     res.status(200).json({
       status: "success",
@@ -100,4 +143,5 @@ module.exports = {
   createCategory,
   updateCategory,
   deleteCategory,
+  uploadImage,
 };

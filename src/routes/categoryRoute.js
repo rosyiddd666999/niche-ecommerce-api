@@ -7,6 +7,7 @@ const {
   createCategory,
   updateCategory,
   deleteCategory,
+  uploadImage,
 } = require("../controllers/categoryController.js");
 
 const {
@@ -18,8 +19,22 @@ const router = express.Router();
 
 router.get("/", getAllCategories);
 router.get("/:id", getCategoryById);
-router.post("/", protect, isAdmin, createCategoryValidation, createCategory);
-router.put("/:id", protect, isAdmin, updateCategoryValidation, updateCategory);
-router.delete("/:id", protect , isAdmin, deleteCategory);
+router.post(
+  "/",
+  protect,
+  isAdmin,
+  createCategoryValidation,
+  uploadImage,
+  createCategory
+);
+router.put(
+  "/:id",
+  protect,
+  isAdmin,
+  updateCategoryValidation,
+  uploadImage,
+  updateCategory
+);
+router.delete("/:id", protect, isAdmin, deleteCategory);
 
 module.exports = router;
