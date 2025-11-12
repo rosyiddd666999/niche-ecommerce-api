@@ -84,7 +84,7 @@ npm install
 Create a `.env` file in the project root and fill in your environment variables:
 
 ```env
-APP_NAME=
+APP_NAME=E-Commerce API
 
 PORT=5000
 APP_PORT=3000
@@ -122,7 +122,7 @@ CLOUDINARY_NAME=your_cloud_name
 CLOUDINARY_API_KEY=your_api_key
 CLOUDINARY_API_SECRET=your_api_secret
 
-REDIS_URL=
+REDIS_URL=your-redis-url
 ```
 
 ### 4. Run the Server
