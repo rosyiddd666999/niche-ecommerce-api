@@ -61,7 +61,7 @@ project-root/
 ├──├── routes/          # API routes
 ├──└──  utils/           # Reusable utility functions (dummy data, service, validation)
 ├── uploads
-├── .env.example
+├── .env
 └── server.js
 ```
 
