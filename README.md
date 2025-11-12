@@ -53,14 +53,16 @@ A RESTful API built for a niche e-commerce platform. Developed using **Node.js**
 
 ```
 project-root/
-├── config/          # Configuration files (DB, Cloudinary, etc.)
-├── controllers/     # Route logic and business operations
-├── middlewares/     # Middleware (auth, error handling, etc.)
-├── models/          # Sequelize models
-├── routes/          # API routes
-├── utils/           # Reusable utility functions (dummy data, service, validation)
-├── app.js           # App entry point
-└── .env.example     # Example environment variables
+├── src/
+├──├── config/          # Configuration files (DB, Cloudinary, etc.)
+├──├── controllers/     # Route logic and business operations
+├──├── middlewares/     # Middleware (auth, error handling, etc.)
+├──├── models/          # Sequelize models
+├──├── routes/          # API routes
+├──└──  utils/           # Reusable utility functions (dummy data, service, validation)
+├── uploads
+├── .env.example
+└── server.js
 ```
 
 ---
@@ -87,29 +89,29 @@ APP_NAME=
 PORT=5000
 APP_PORT=3000
 APP_URL=yout-domain.com
-NODE_ENV=
-ALLOWED_ORIGINS=
+NODE_ENV=devlopment or production
+ALLOWED_ORIGINS=https://yourdomain.com,https://www.yourdomain.com,https://admin.yourdomain.com
 
 BASE_URL=http://localhost:5000
-DB_HOST=
-DB_USERNAME=
-DB_PASSWORD=
-DATABASE_NAME=
-MULTIPLESTATEMENTS=
+DB_HOST=your-db-host
+DB_USERNAME=your0db-username
+DB_PASSWORD=your-db-password
+DATABASE_NAME=your-db-name
+MULTIPLESTATEMENTS=true
 
 JWT_SECRET_KEY=your_secret_key
-JWT_EXPIRE_TIME=
-JWT_COOKIE_EXPIRES_IN=
+JWT_EXPIRE_TIME=7h or d
+JWT_COOKIE_EXPIRES_IN=1h or d
 
-EMAIL_HOST=
-EMAIL_PORT=
-EMAIL_USER=
-EMAIL_PASSWORD=
-EMAIL_FROM=
+EMAIL_HOST=smtp.gmail.com
+EMAIL_PORT=587
+EMAIL_USER=your-gmail
+EMAIL_PASSWORD=your-password-gmail-for-app(not password gmail)
+EMAIL_FROM=your-gmail
 
-MIDTRANS_SERVER_KEY=
-MIDTRANS_CLIENT_KEY=
-MIDTRANS_IS_PRODUCTION=
+MIDTRANS_SERVER_KEY=your-midtrans-server-key
+MIDTRANS_CLIENT_KEY=your-midtrans-client-key
+MIDTRANS_IS_PRODUCTION=false if just testing
 MIDTRANS_NOTIFICATION_URL=https://your-domain/api/orders/notification
 
 API_KEY_MOBILE_APP=your-mobile-api-key
@@ -159,3 +161,5 @@ If you find this project helpful, please give it a ⭐ on GitHub to show your su
 
 For questions or support, feel free to reach out:
 - Email: rosidabdul66@gmail,com
+
+&copy; Abdul Rosyid
