@@ -61,10 +61,10 @@ const createOrderByCart = async (req, res) => {
     // Determine shipping address
     let finalAddress = shipping_address;
     
-    // Jika tidak ada input manual, ambil dari user addresses
+    // If no shipping address provided, use user's default address
     if (!finalAddress) {
       if (user.addresses && user.addresses.length > 0) {
-        // Ambil address pertama sebagai default
+        // Get first address as default
         finalAddress = user.addresses[0];
       } else {
         return res.status(400).json({
@@ -78,7 +78,7 @@ const createOrderByCart = async (req, res) => {
     const taxPrice = Math.round(subtotal * 0.02);
     const totalOrderPrice = subtotal + taxPrice + shipping_price;
 
-    // Create order dengan status pending
+    // Create order with status pending
     const order = await Order.create({
       user_id: userId,
       tax_price: taxPrice,
@@ -109,7 +109,7 @@ const createOrderByCart = async (req, res) => {
       name: item.product.title,
     }));
 
-    // Tambahkan tax dan shipping sebagai item
+    // Add tax dan shipping to item
     itemDetails.push({
       id: 'TAX',
       price: taxPrice,
@@ -154,13 +154,13 @@ const createOrderByCart = async (req, res) => {
     // Create Snap transaction
     const transaction = await snap.createTransaction(snapParameter);
     
-    // Update order dengan snap token
+    // Update order with snap token
     await order.update({
       snap_token: transaction.token,
       payment_transaction_id: snapParameter.transaction_details.order_id
     });
 
-    // Clear cart setelah order dibuat
+    // Clear cart after order created
     await CartItem.destroy({ where: { cart_id: cartId } });
     await cart.update({
       total_cart_price: 0,
@@ -381,7 +381,7 @@ const successOrderPayment = async (req, res) => {
       });
     }
 
-    // Cek status payment real-time dari Midtrans
+    // Check status payment real-time from Midtrans
     if (order.payment_status === 'pending' && order.payment_transaction_id) {
       try {
         const statusResponse = await coreApi.transaction.status(order.payment_transaction_id);
@@ -390,7 +390,7 @@ const successOrderPayment = async (req, res) => {
         let isPaid = order.is_paid;
         let paidAt = order.paid_at;
 
-        // Update status berdasarkan response Midtrans
+        // Update status based on Midtrans response
         if (statusResponse.transaction_status === 'settlement' || 
             (statusResponse.transaction_status === 'capture' && statusResponse.fraud_status === 'accept')) {
           paymentStatus = 'settlement';

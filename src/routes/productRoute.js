@@ -24,17 +24,17 @@ router.post(
   "/",
   protect,
   isAdmin,
-  createProductValidation,
   uploadImage,
+  createProductValidation,
   createProduct
 );
 router.put(
   "/:id",
   protect,
   isAdmin,
-  updateProductValidation,
   uploadImage,
   requireAtLeastOneChange,
+  updateProductValidation,
   updateProduct
 );
 router.delete("/:id", protect, isAdmin, deleteProduct);
