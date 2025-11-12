@@ -1,20 +1,9 @@
 // validators/cartValidators.js
 const { body, param, validationResult } = require("express-validator");
-const { Product, CartItem } = require("../../models"); // sesuaikan path models
-
-const handleValidationErrors = (req, res, next) => {
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return res.status(400).json({
-      status: "error",
-      errors: errors.array().map((err) => ({
-        field: err.path,
-        message: err.msg,
-      })),
-    });
-  }
-  next();
-};
+const { Product, CartItem } = require("../../models/index.js");
+const {
+  handleValidationErrors,
+} = require("../../middlewares/errorsValidationHandling.js");
 
 /**
  * ADD item to cart

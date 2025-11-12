@@ -27,7 +27,7 @@ const addProductToCart = async (req, res) => {
     });
 
     if (cartItem) {
-      // Update quantity jika sudah ada
+      // Update quantity if already in cart
       const newQuantity = cartItem.quantity + quantity;
 
       if (product.stock < newQuantity) {
@@ -48,7 +48,6 @@ const addProductToCart = async (req, res) => {
         },
       });
     } else {
-      // Buat cart item baru
       if (product.stock < quantity) {
         return res.status(400).json({
           status: "error",
@@ -187,7 +186,7 @@ const deleteCartItem = async (req, res) => {
     const userId = req.user.id;
     const { cartItemId } = req.params;
 
-    // Cari cart item dan pastikan milik user yang login
+    // Find cart item with user check
     const cartItem = await CartItem.findOne({
       where: { id: cartItemId },
       include: [

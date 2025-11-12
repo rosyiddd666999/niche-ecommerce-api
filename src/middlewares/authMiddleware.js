@@ -23,7 +23,6 @@ const protect = async (req, res, next) => {
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
 
-    // Cek apakah user masih exist
     const user = await User.findByPk(decoded.userId);
 
     if (!user) {
@@ -40,7 +39,6 @@ const protect = async (req, res, next) => {
       });
     }
 
-    // Attach user ke request
     req.user = user;
     next();
   } catch (error) {
@@ -69,7 +67,7 @@ const protect = async (req, res, next) => {
 
 const isAdmin = (req, res, next) => {
   try {
-    const user = req.user; // di-attach oleh protect
+    const user = req.user;
     if (!user) {
       return res.status(401).json({
         status: "error",

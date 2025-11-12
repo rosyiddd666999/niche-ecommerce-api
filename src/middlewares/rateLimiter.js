@@ -1,9 +1,9 @@
 const rateLimit = require("express-rate-limit");
 
-// Rate limiter untuk auth endpoints
+// Rate limiter for auth endpoints
 const authLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 menit
-  max: 5, // maksimal 5 request per windowMs
+  windowMs: 15 * 60 * 1000, // 15 min
+  max: 5,
   message: {
     status: "error",
     message: "Terlalu banyak percobaan dari IP ini, silakan coba lagi setelah 15 menit"
@@ -12,14 +12,14 @@ const authLimiter = rateLimit({
   legacyHeaders: false,
   // Skip successful requests
   skipSuccessfulRequests: false,
-  // Skip failed requests (optional, set to true jika ingin hanya menghitung failed attempts)
+  // Skip failed requests (optional, set to true if failed requests should not count)
   skipFailedRequests: false,
 });
 
-// Rate limiter khusus untuk forgot password (lebih ketat)
+// Rate limiter for forgot password endpoint
 const forgotPasswordLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 menit
-  max: 3, // maksimal 3 request per windowMs
+  windowMs: 15 * 60 * 1000, // 15 min
+  max: 3,
   message: {
     status: "error",
     message: "Terlalu banyak permintaan reset password dari IP ini, silakan coba lagi setelah 15 menit"

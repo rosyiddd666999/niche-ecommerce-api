@@ -73,7 +73,7 @@ const catchAsync = (fn) => {
 
 /**
  * Custom Error Class
- * Untuk membuat error dengan status code
+ * For making operational errors
  *
  * Usage:
  * throw new AppError('User not found', 404);

@@ -1,5 +1,5 @@
 /**
- * Sanitize middleware untuk mencegah XSS dan NoSQL injection
+ * Sanitize middleware for XSS prevention
  */
 const sanitize = (req, res, next) => {
   try {
@@ -16,7 +16,7 @@ const sanitize = (req, res, next) => {
           sanitizedQuery[key] = sanitizeValue(req.query[key]);
         }
       }
-      // Ganti query dengan object baru (tidak modify langsung)
+      // Change req.query reference to sanitizedQuery
       Object.defineProperty(req, "sanitizedQuery", {
         value: sanitizedQuery,
         writable: false,
@@ -47,7 +47,7 @@ const sanitize = (req, res, next) => {
 };
 
 /**
- * Sanitize object secara rekursif
+ * Sanitize object recursively
  */
 const sanitizeObject = (obj) => {
   if (obj === null || typeof obj !== "object") {
@@ -61,12 +61,6 @@ const sanitizeObject = (obj) => {
   const sanitized = {};
   for (const key in obj) {
     if (Object.prototype.hasOwnProperty.call(obj, key)) {
-      // Skip keys yang mengandung karakter berbahaya (NoSQL injection)
-      if (key.includes("$") || key.includes(".")) {
-        console.warn(`Blocked potentially malicious key: ${key}`);
-        continue;
-      }
-
       sanitized[key] = sanitizeObject(obj[key]);
     }
   }
@@ -93,7 +87,7 @@ const sanitizeValue = (value) => {
 };
 
 /**
- * Strict sanitization untuk input yang tidak boleh mengandung HTML sama sekali
+ * Strict sanitization for inputs that should not contain any HTML special characters
  */
 const sanitizeStrict = (value) => {
   if (typeof value !== "string") {

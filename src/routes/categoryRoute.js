@@ -23,16 +23,16 @@ router.post(
   "/",
   protect,
   isAdmin,
-  createCategoryValidation,
   uploadImage,
+  createCategoryValidation,
   createCategory
 );
 router.put(
   "/:id",
   protect,
   isAdmin,
-  updateCategoryValidation,
   uploadImage,
+  updateCategoryValidation,
   updateCategory
 );
 router.delete("/:id", protect, isAdmin, deleteCategory);
