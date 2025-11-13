@@ -34,7 +34,7 @@ app.use(hpp()); // Prevent HTTP Parameter Pollution
 
 const allowedOrigins = process.env.ALLOWED_ORIGINS
   ? process.env.ALLOWED_ORIGINS.split(",")
-  : [`http://localhost:${process.env.PORT}`];
+  : [`http://localhost:${process.env.APP_PORT}`];
 
 app.use(
   cors({
