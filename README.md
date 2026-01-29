@@ -31,7 +31,6 @@ A RESTful API built for a niche e-commerce platform. Developed using **Node.js**
 ![Express.js](https://img.shields.io/badge/Express.js-000000?style=for-the-badge&logo=express&logoColor=white)
 ![Sequelize](https://img.shields.io/badge/Sequelize-52B0E7?style=for-the-badge&logo=sequelize&logoColor=white)
 ![MySQL](https://img.shields.io/badge/MySQL-005C84?style=for-the-badge&logo=mysql&logoColor=white)
-![PostgreSQL](https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white)
 ![JWT](https://img.shields.io/badge/JWT-000000?style=for-the-badge&logo=JSON%20web%20tokens&logoColor=white)
 ![Redis](https://img.shields.io/badge/Redis-DC382D?style=for-the-badge&logo=redis&logoColor=white)
 ![Cloudinary](https://img.shields.io/badge/Cloudinary-3448C5?style=for-the-badge&logo=cloudinary&logoColor=white)
@@ -40,10 +39,10 @@ A RESTful API built for a niche e-commerce platform. Developed using **Node.js**
 |-------------|-------------|
 | **Node.js** | JavaScript runtime environment |
 | **Express.js** | Web framework for Node.js |
-| **Sequelize ORM** | Database ORM for MySQL / PostgreSQL |
+| **Sequelize ORM** | Database ORM for MySQL / Other you need |
 | **JWT** | Secure token-based authentication |
 | **Cloudinary** | Cloud storage for product images |
-| **Redis** | In-memory caching layer (optional) |
+| **Redis** | In-memory caching layer (coming soon) |
 | **Multer** | File upload middleware for Node.js |
 | **Midtrans / Stripe** | Payment gateway integration |
 
