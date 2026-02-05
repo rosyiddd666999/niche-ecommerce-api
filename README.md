@@ -32,7 +32,6 @@ A RESTful API built for a niche e-commerce platform. Developed using **Node.js**
 ![Sequelize](https://img.shields.io/badge/Sequelize-52B0E7?style=for-the-badge&logo=sequelize&logoColor=white)
 ![MySQL](https://img.shields.io/badge/MySQL-005C84?style=for-the-badge&logo=mysql&logoColor=white)
 ![JWT](https://img.shields.io/badge/JWT-000000?style=for-the-badge&logo=JSON%20web%20tokens&logoColor=white)
-![Redis](https://img.shields.io/badge/Redis-DC382D?style=for-the-badge&logo=redis&logoColor=white)
 ![Cloudinary](https://img.shields.io/badge/Cloudinary-3448C5?style=for-the-badge&logo=cloudinary&logoColor=white)
 
 | Technology | Description |
@@ -42,7 +41,6 @@ A RESTful API built for a niche e-commerce platform. Developed using **Node.js**
 | **Sequelize ORM** | Database ORM for MySQL / Other you need |
 | **JWT** | Secure token-based authentication |
 | **Cloudinary** | Cloud storage for product images |
-| **Redis** | In-memory caching layer (coming soon) |
 | **Multer** | File upload middleware for Node.js |
 | **Midtrans / Stripe** | Payment gateway integration |
 
@@ -120,13 +118,11 @@ API_KEY_ADMIN_PANEL=your-admin-panel-api-key
 CLOUDINARY_NAME=your_cloud_name
 CLOUDINARY_API_KEY=your_api_key
 CLOUDINARY_API_SECRET=your_api_secret
-
-REDIS_URL=your-redis-url
 ```
 
 ### 4. Run the Server
 ```bash
-npm run dev
+nodemon server.js
 ```
 
 The API will be available at:
